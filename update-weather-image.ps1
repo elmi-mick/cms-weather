@@ -1,6 +1,6 @@
 <#
 Holt das aktuelle Wetter fuer Frankfurt (Open-Meteo, kein API-Key noetig) und
-schreibt ein Portraet-Bild (1080x1920, 16:9 hochkant) nach image.png:
+schreibt ein Portraet-Bild (1080x1920, 16:9 hochkant) nach image.jpg:
 Hintergrund sonnig/bewoelkt, Temperatur gross mittig, Uhrzeit unten mittig.
 
 Lokal per Dauerschleife nutzbar (Standard, alle 60s) oder einmalig mit -Once
@@ -9,7 +9,7 @@ Lokal per Dauerschleife nutzbar (Standard, alle 60s) oder einmalig mit -Once
 param(
     [double]$Latitude = 50.1109,
     [double]$Longitude = 8.6821,
-    [string]$OutputPath = (Join-Path $PSScriptRoot "image.png"),
+    [string]$OutputPath = (Join-Path $PSScriptRoot "image.jpg"),
     [int]$IntervalSeconds = 60,
     [switch]$Once
 )
@@ -105,9 +105,13 @@ function New-WeatherImage {
     $format.Dispose()
     $g.Dispose()
 
+    $jpegCodec = [System.Drawing.Imaging.ImageCodecInfo]::GetImageEncoders() | Where-Object { $_.MimeType -eq "image/jpeg" }
+    $encParams = [System.Drawing.Imaging.EncoderParameters]::new(1)
+    $encParams.Param[0] = [System.Drawing.Imaging.EncoderParameter]::new([System.Drawing.Imaging.Encoder]::Quality, [int64]92)
+
     # ueber temp-datei speichern + verschieben, damit ein CMS nie eine halb geschriebene Datei liest
     $tmpPath = "$Path.tmp"
-    $bmp.Save($tmpPath, [System.Drawing.Imaging.ImageFormat]::Png)
+    $bmp.Save($tmpPath, $jpegCodec, $encParams)
     $bmp.Dispose()
     Move-Item -Path $tmpPath -Destination $Path -Force
 }

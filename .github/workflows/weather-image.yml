@@ -17,14 +17,14 @@ jobs:
 
       - name: Generate weather image
         shell: powershell
-        run: ./update-weather-image.ps1 -Once -OutputPath "$env:GITHUB_WORKSPACE\image.png"
+        run: ./update-weather-image.ps1 -Once -OutputPath "$env:GITHUB_WORKSPACE\image.jpg"
 
       - name: Commit and push if changed
         shell: bash
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add image.png
+          git add image.jpg
           if ! git diff --cached --quiet; then
             git commit -m "Update weather image"
             git push
