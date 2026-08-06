@@ -2,7 +2,9 @@ name: Update weather image
 
 on:
   schedule:
-    - cron: '*/15 * * * *'
+    # krumme minuten: glatte zeiten (:00/:15/:30/:45) sind bei github am staerksten
+    # ausgelastet, geplante laeufe werden dort verzoegert oder verworfen
+    - cron: '7,22,37,52 * * * *'
   workflow_dispatch: {}
 
 permissions:
